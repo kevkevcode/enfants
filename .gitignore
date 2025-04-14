@@ -48,3 +48,6 @@ DerivedData/
 *.p12
 *.mobileprovision
 *.cer
+
+# API Keys and Configuration
+Config/
