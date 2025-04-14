@@ -1,0 +1,8 @@
+{
+    "xcodePath": "/Applications/Xcode.app",
+    "xcodeCommandLineToolsPath": "/Library/Developer/CommandLineTools",
+    "xcodeVersion": "16.3",
+    "buildServerEnabled": false,
+    "swiftToolchainPath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain",
+    "useXcodeBuildServer": false
+} 
