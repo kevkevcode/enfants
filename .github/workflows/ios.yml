@@ -19,13 +19,16 @@ jobs:
     - name: Show Xcode Version
       run: xcodebuild -version
       
+    - name: List Project Contents
+      run: ls -la
+      
     - name: List Schemes
-      run: xcodebuild -list -workspace enfants.xcworkspace
+      run: xcodebuild -list -project enfants.xcodeproj
       
     - name: Build
       run: |
         xcodebuild clean build \
-          -workspace enfants.xcworkspace \
+          -project enfants.xcodeproj \
           -scheme enfants \
           -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
           CODE_SIGN_IDENTITY="" \
