@@ -9,6 +9,25 @@ Une application iOS pour générer des comptines personnalisées pour les enfant
 - Lecture audio des comptines
 - Génération via l'API ChatGPT ou localement
 
+## Configuration
+
+Pour utiliser l'application, vous devez configurer les clés API suivantes :
+
+1. Créez un fichier `.env` à la racine du projet avec les variables suivantes :
+   ```
+   OPENAI_API_KEY=votre_clé_openai
+   ELEVENLABS_API_KEY=votre_clé_elevenlabs
+   ```
+
+2. Assurez-vous que le fichier `.env` est bien ignoré par Git (il devrait l'être par défaut)
+
+3. Copiez le fichier `Config.example.swift` en `Config.swift` et personnalisez-le selon vos besoins
+
+### Obtention des clés API
+
+- **OpenAI API** : Créez un compte sur [OpenAI](https://platform.openai.com/) et générez une clé API
+- **ElevenLabs API** : Créez un compte sur [ElevenLabs](https://elevenlabs.io/) et générez une clé API
+
 ## Configuration de l'API OpenAI
 
 Pour utiliser l'API ChatGPT, vous devez configurer votre clé API OpenAI :
