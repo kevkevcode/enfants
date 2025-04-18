@@ -74,4 +74,36 @@ Si aucune comptine n'est générée par l'API :
 
 - L'application nécessite une connexion Internet pour utiliser l'API ChatGPT
 - Les données de l'enfant sont stockées localement sur l'appareil
-- La génération locale est utilisée comme solution de secours si l'API échoue 
+- La génération locale est utilisée comme solution de secours si l'API échoue
+
+## GitHub Configuration
+
+### Setting up Secrets
+
+1. Go to your GitHub repository settings
+2. Navigate to "Secrets and variables" > "Actions"
+3. Add the following secrets:
+   - `OPENAI_API_KEY`: Your OpenAI API key
+   - `ELEVENLABS_API_KEY`: Your ElevenLabs API key
+
+### Workflow Configuration
+
+The repository includes two GitHub Actions workflows:
+
+1. **CI/CD Pipeline** (`ci.yml`):
+   - Runs on push to main and pull requests
+   - Builds and tests the iOS app
+   - Ensures code quality and functionality
+
+2. **Secrets Management** (`secrets.yml`):
+   - Manages API keys and sensitive configuration
+   - Updates Config.swift with the latest secrets
+   - Can be triggered manually for different environments
+
+### Security Best Practices
+
+- Never commit API keys directly in the code
+- Use GitHub Secrets for storing sensitive information
+- Keep the `.env` file in `.gitignore`
+- Use `Config.example.swift` as a template for configuration
+- Regularly rotate API keys and update secrets 
