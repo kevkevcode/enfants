@@ -28,7 +28,6 @@ Pods/
 Carthage/Build/
 
 # Configuration files with sensitive data
-enfants/Config.swift
 enfants.xcodeproj/enfants/Config.swift
 enfants.xcodeproj/enfants/APIConfig.swift
 
