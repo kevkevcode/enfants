@@ -4,7 +4,7 @@ class Config {
     static let shared = Config()
     
     // Configuration de l'API OpenAI
-    let openAIAPIKey: String = {
+    static let openAIAPIKey: String = {
         if let apiKey = ProcessInfo.processInfo.environment["OPENAI_API_KEY"] {
             return apiKey
         }
@@ -12,7 +12,7 @@ class Config {
     }()
     
     // Configuration de l'API ElevenLabs
-    let elevenLabsAPIKey: String = {
+    static let elevenLabsAPIKey: String = {
         if let apiKey = ProcessInfo.processInfo.environment["ELEVENLABS_API_KEY"] {
             return apiKey
         }
@@ -20,13 +20,13 @@ class Config {
     }()
     
     // URLs des APIs
-    let openAIAPIURL = "https://api.openai.com/v1/chat/completions"
-    let elevenLabsAPIURL = "https://api.elevenlabs.io/v1/text-to-speech"
+    static let openAIAPIURL = "https://api.openai.com/v1/chat/completions"
+    static let elevenLabsAPIURL = "https://api.elevenlabs.io/v1/text-to-speech"
     
     // Configuration du modèle
-    let openAIModel = "gpt-4"
-    let temperature = 0.7
-    let maxTokens = 1000
+    static let openAIModel = "gpt-4"
+    static let temperature = 0.7
+    static let maxTokens = 1000
     
     private init() {}
     
