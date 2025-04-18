@@ -57,7 +57,7 @@ class ComptineViewModel: ObservableObject {
         }
     }
 
-    func genererHistoire(prenom: String, age: Int, activite: String, passions: String, morale: String, longueur: StoryLength) {
+    func genererHistoire(prenom: String, age: Int, passions: String, morale: String, longueur: StoryLength) {
         isLoading = true
         error = nil
         histoire = nil
@@ -66,7 +66,6 @@ class ComptineViewModel: ObservableObject {
         ChatGPTService.shared.genererComptine(
             prenom: prenom,
             age: age,
-            activite: activite,
             passions: passions,
             morale: morale,
             longueur: longueur

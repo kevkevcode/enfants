@@ -53,7 +53,7 @@ class ChatGPTService: NSObject, URLSessionTaskDelegate {
     private static var monitor: NWPathMonitor?
     private static var isNetworkAvailable = false
     private static var isAPIAvailable = false
-    private static var pendingRequests: [(String, Int, String, String, String, StoryLength, (Result<(String, String), Error>) -> Void)] = []
+    private static var pendingRequests: [(String, Int, String, String, StoryLength, (Result<(String, String), Error>) -> Void)] = []
     private var currentRetryCount = 0
     
     override private init() {
@@ -72,7 +72,6 @@ class ChatGPTService: NSObject, URLSessionTaskDelegate {
     func genererComptine(
         prenom: String,
         age: Int,
-        activite: String,
         passions: String,
         morale: String,
         longueur: StoryLength,
@@ -80,7 +79,7 @@ class ChatGPTService: NSObject, URLSessionTaskDelegate {
     ) {
         if !Self.isNetworkAvailable {
             print("📡 [DEBUG] Réseau indisponible, mise en file d'attente...")
-            Self.pendingRequests.append((prenom, age, activite, passions, morale, longueur, completion))
+            Self.pendingRequests.append((prenom, age, passions, morale, longueur, completion))
             return
         }
         
@@ -88,19 +87,25 @@ class ChatGPTService: NSObject, URLSessionTaskDelegate {
             print("🔄 [DEBUG] API indisponible, test en cours...")
             testAPI { [weak self] success in
                 if success {
-                    self?.genererComptine(prenom: prenom, age: age, activite: activite, passions: passions, morale: morale, longueur: longueur, completion: completion)
+                    self?.genererComptine(prenom: prenom, age: age, passions: passions, morale: morale, longueur: longueur, completion: completion)
                 } else {
-                    Self.pendingRequests.append((prenom, age, activite, passions, morale, longueur, completion))
+                    Self.pendingRequests.append((prenom, age, passions, morale, longueur, completion))
                 }
             }
             return
         }
         
-        sendRequest(prenom: prenom, age: age, activite: activite, passions: passions, morale: morale, longueur: longueur, completion: completion)
+        sendRequest(prenom: prenom, age: age, passions: passions, morale: morale, longueur: longueur, completion: completion)
     }
     
-    private func sendRequest(prenom: String, age: Int, activite: String, passions: String, morale: String, longueur: StoryLength, completion: @escaping (Result<(String, String), Error>) -> Void) {
+    private func sendRequest(prenom: String, age: Int, passions: String, morale: String, longueur: StoryLength, completion: @escaping (Result<(String, String), Error>) -> Void) {
         print("📡 [DEBUG] Préparation de la requête API...")
+        print("📝 [DEBUG] Paramètres reçus:")
+        print("   - Prénom: \(prenom)")
+        print("   - Âge: \(age)")
+        print("   - Passions: \(passions)")
+        print("   - Morale: \(morale)")
+        print("   - Longueur: \(longueur)")
         
         guard let url = URL(string: "https://api.openai.com/v1/chat/completions") else {
             print("❌ [DEBUG] URL invalide")
@@ -117,6 +122,7 @@ class ChatGPTService: NSObject, URLSessionTaskDelegate {
         
         print("📝 [DEBUG] Construction du prompt...")
         let language = LocalizationManager.shared.currentLanguage
+        print("🌐 [DEBUG] Langue sélectionnée: \(language)")
         let languagePrompt: String
         switch language {
         case "fr":
@@ -137,53 +143,102 @@ class ChatGPTService: NSObject, URLSessionTaskDelegate {
         \(language == "fr" ? """
         Génère une histoire \(longueur == .short ? "courte" : longueur == .medium ? "de longueur moyenne" : "longue") (environ \(longueur.wordCount) mots) et adaptée pour un enfant de \(age) ans avec les éléments suivants :
         - Prénom de l'enfant : \(prenom)
-        - Activité principale : \(activite)
         - Centres d'intérêt : \(passions)
         - Morale de l'histoire : \(morale)
+        
+        Structure de l'histoire :
+        1. Introduction : présente le personnage principal et son univers
+        2. Milieu : introduit une complication ou un défi
+        3. Fin : résout le problème de manière positive
         
         Réponds avec un titre court et accrocheur sur la première ligne, suivi d'un retour à la ligne, puis l'histoire.
         L'histoire doit être positive et encourageante.
         Utilise un vocabulaire et des concepts adaptés à l'âge de l'enfant.
+        
+        IMPORTANT : La morale doit être implicite dans l'histoire, transmise à travers les actions et les choix des personnages.
+        Ne mentionne jamais explicitement la morale à la fin de l'histoire.
+        Ne termine pas l'histoire en expliquant ce que l'enfant a appris.
+        Laisse le lecteur tirer ses propres conclusions.
         """ : language == "en" ? """
         Generate a \(longueur == .short ? "short" : longueur == .medium ? "medium-length" : "long") story (about \(longueur.wordCount) words) adapted for a \(age)-year-old child with the following elements:
         - Child's name: \(prenom)
-        - Main activity: \(activite)
         - Interests: \(passions)
         - Story's moral: \(morale)
+        
+        Story structure:
+        1. Introduction: introduce the main character and their world
+        2. Middle: introduce a complication or challenge
+        3. End: resolve the problem in a positive way
         
         Respond with a short catchy title on the first line, followed by a line break, then the story.
         The story should be positive and encouraging.
         Use vocabulary and concepts appropriate for the child's age.
+        
+        IMPORTANT: The moral should be implicit in the story, conveyed through the characters' actions and choices.
+        Never explicitly state the moral at the end of the story.
+        Do not end the story by explaining what the child learned.
+        Let the reader draw their own conclusions.
         """ : language == "es" ? """
         Genera una historia \(longueur == .short ? "corta" : longueur == .medium ? "de longitud media" : "larga") (aproximadamente \(longueur.wordCount) palabras) adaptada para un niño de \(age) años con los siguientes elementos:
         - Nombre del niño: \(prenom)
-        - Actividad principal: \(activite)
         - Intereses: \(passions)
         - Moraleja de la historia: \(morale)
+        
+        Estructura de la historia:
+        1. Introducción: presenta al personaje principal y su mundo
+        2. Medio: introduce una complicación o desafío
+        3. Final: resuelve el problema de manera positiva
         
         Responde con un título corto y atractivo en la primera línea, seguido de un salto de línea, luego la historia.
         La historia debe ser positiva y alentadora.
         Utiliza vocabulario y conceptos apropiados para la edad del niño.
+        
+        IMPORTANTE: La moraleja debe ser implícita en la historia, transmitida a través de las acciones y elecciones de los personajes.
+        Nunca menciones explícitamente la moraleja al final de la historia.
+        No termines la historia explicando lo que el niño aprendió.
+        Deja que el lector saque sus propias conclusiones.
         """ : """
         Создайте \(longueur == .short ? "короткую" : longueur == .medium ? "среднюю" : "длинную") историю (примерно \(longueur.wordCount) слов), адаптированную для ребенка \(age) лет, со следующими элементами:
         - Имя ребенка: \(prenom)
-        - Основное занятие: \(activite)
         - Интересы: \(passions)
         - Мораль истории: \(morale)
+        
+        Структура истории:
+        1. Введение: представьте главного героя и его мир
+        2. Середина: введите осложнение или вызов
+        3. Конец: решите проблему положительным образом
         
         Ответьте коротким привлекательным заголовком на первой строке, затем с новой строки напишите историю.
         История должна быть позитивной и вдохновляющей.
         Используйте словарный запас и понятия, соответствующие возрасту ребенка.
+        
+        ВАЖНО: Мораль должна быть неявной в истории, передаваемой через действия и выбор персонажей.
+        Никогда не упоминайте мораль явно в конце истории.
+        Не заканчивайте историю объяснением того, чему научился ребенок.
+        Позвольте читателю сделать свои собственные выводы.
         """)
         """
         
         print("🛠 [DEBUG] Configuration de la requête...")
+        
+        // Configuration de la session URL
+        let sessionConfig = URLSessionConfiguration.default
+        sessionConfig.timeoutIntervalForRequest = 30.0
+        sessionConfig.timeoutIntervalForResource = 60.0
+        sessionConfig.waitsForConnectivity = true
+        sessionConfig.allowsCellularAccess = true
+        sessionConfig.allowsConstrainedNetworkAccess = true
+        sessionConfig.allowsExpensiveNetworkAccess = true
+        
+        let session = URLSession(configuration: sessionConfig)
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Bearer \(Config.openAIAPIKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("gzip, deflate", forHTTPHeaderField: "Accept-Encoding")
         request.setValue("enfants-app/1.0", forHTTPHeaderField: "User-Agent")
+        request.timeoutInterval = 30.0
         
         let messages: [[String: Any]] = [
             ["role": "system", "content": languagePrompt],
@@ -210,9 +265,10 @@ class ChatGPTService: NSObject, URLSessionTaskDelegate {
         }
         
         print("🚀 [DEBUG] Envoi de la requête à OpenAI...")
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+        let task = session.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("❌ [DEBUG] Erreur réseau: \(error.localizedDescription)")
+                print("❌ [DEBUG] Détails de l'erreur: \(error)")
                 completion(.failure(error))
                 return
             }
@@ -224,6 +280,7 @@ class ChatGPTService: NSObject, URLSessionTaskDelegate {
             }
             
             print("📡 [DEBUG] Code de réponse HTTP: \(httpResponse.statusCode)")
+            print("📡 [DEBUG] Headers de réponse: \(httpResponse.allHeaderFields)")
             
             guard let data = data else {
                 print("❌ [DEBUG] Pas de données reçues")
@@ -345,11 +402,10 @@ class ChatGPTService: NSObject, URLSessionTaskDelegate {
                 shared.genererComptine(
                     prenom: request.0,
                     age: request.1,
-                    activite: request.2,
-                    passions: request.3,
-                    morale: request.4,
-                    longueur: request.5,
-                    completion: request.6
+                    passions: request.2,
+                    morale: request.3,
+                    longueur: request.4,
+                    completion: request.5
                 )
             }
         }

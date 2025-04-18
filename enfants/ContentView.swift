@@ -147,7 +147,6 @@ struct EnfantCard: View {
                     destination: ComptineView(
                         prenom: enfant.prenom,
                         age: enfant.age,
-                        activite: enfant.activite,
                         passions: enfant.passions
                     )
                 ) {

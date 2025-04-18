@@ -13,7 +13,6 @@ struct ComptineView: View {
     
     let prenom: String
     let age: Int
-    let activite: String
     let passions: String
     
     var body: some View {
@@ -63,7 +62,6 @@ struct ComptineView: View {
                     viewModel.genererHistoire(
                         prenom: prenom,
                         age: age,
-                        activite: activite,
                         passions: passions,
                         morale: message,
                         longueur: selectedLength
@@ -116,69 +114,64 @@ struct StoryOptionsView: View {
                 }
                 
                 Section(header: Text(localization.localizedString("story.message.title"))) {
+                    // Boutons de valeurs prédéfinies
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 10) {
+                            ForEach(localization.currentLanguage == "fr" ? [
+                                "L'entraide", "La bienveillance", "Le partage", "Le respect", 
+                                "La persévérance", "L'amitié", "La politesse", "La confiance en soi"
+                            ] : localization.currentLanguage == "en" ? [
+                                "Helping others", "Kindness", "Sharing", "Respect",
+                                "Perseverance", "Friendship", "Politeness", "Self-confidence"
+                            ] : localization.currentLanguage == "es" ? [
+                                "La ayuda mutua", "La amabilidad", "Compartir", "El respeto",
+                                "La perseverancia", "La amistad", "La cortesía", "La confianza en sí mismo"
+                            ] : [
+                                "Взаимопомощь", "Доброта", "Совместное использование", "Уважение",
+                                "Настойчивость", "Дружба", "Вежливость", "Уверенность в себе"
+                            ], id: \.self) { valeur in
+                                Button(action: {
+                                    if message.contains(valeur) {
+                                        message = message.replacingOccurrences(of: valeur + ", ", with: "")
+                                        message = message.replacingOccurrences(of: ", " + valeur, with: "")
+                                        message = message.replacingOccurrences(of: valeur, with: "")
+                                    } else {
+                                        if !message.isEmpty {
+                                            message += ", "
+                                        }
+                                        message += valeur
+                                    }
+                                }) {
+                                    Text(valeur)
+                                        .font(.system(.subheadline, design: .rounded))
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 20)
+                                                .fill(message.contains(valeur) ? Color.primaryPurple : Color.primaryPurple.opacity(0.1))
+                                        )
+                                        .foregroundColor(message.contains(valeur) ? .white : .primaryPurple)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                    .padding(.vertical, 8)
+                    
+                    // Champ de message personnalisé
                     ZStack(alignment: .topLeading) {
                         TextEditor(text: $message)
-                            .frame(minHeight: 200)
+                            .frame(minHeight: 100)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
                                     .stroke(Color.gray.opacity(0.2), lineWidth: 1)
                             )
                         
                         if message.isEmpty {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text(localization.localizedString("story.message.placeholder"))
-                                    .foregroundColor(.gray)
-                                    .padding(.top, 8)
-                                
-                                Text("Exemples :")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                                    .padding(.top, 4)
-                                
-                                Text("• Dire bonjour et au revoir aux personnes")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                                
-                                Text("• Dire merci et s'il te plaît poliment")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                                
-                                Text("• Attendre son tour pour parler")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                                
-                                Text("\nOu décrire un comportement :")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                                    .padding(.top, 4)
-                                
-                                Text("• Aujourd'hui, mon enfant n'a pas dit bonjour")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                                
-                                Text("• Mon enfant a oublié de dire merci")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                                
-                                Text("\nValeurs à transmettre :")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                                    .padding(.top, 4)
-                                
-                                Text("• L'importance de l'amitié et du partage")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                                
-                                Text("• La persévérance face aux difficultés")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                                
-                                Text("• Le respect de la nature et des animaux")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                            }
-                            .padding(.leading, 4)
-                            .padding(.top, 8)
+                            Text(localization.localizedString("story.message.placeholder"))
+                                .foregroundColor(.gray)
+                                .padding(.top, 8)
+                                .padding(.leading, 4)
                         }
                     }
                 }
@@ -567,7 +560,6 @@ struct ShareSheet: UIViewControllerRepresentable {
     ComptineView(
         prenom: "Lucas",
         age: 5,
-        activite: "jouer au football",
         passions: "les sports et les amis"
     )
 } 

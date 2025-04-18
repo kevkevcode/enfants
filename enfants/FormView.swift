@@ -7,7 +7,6 @@ struct FormView: View {
     @ObservedObject var viewModel: ContentViewModel
     @State private var prenom: String = ""
     @State private var age: String = ""
-    @State private var activite: String = ""
     @State private var passions: String = ""
     @State private var showingImagePicker = false
     @State private var selectedImage: UIImage?
@@ -19,7 +18,6 @@ struct FormView: View {
         if let enfant = enfantToEdit {
             _prenom = State(initialValue: enfant.prenom)
             _age = State(initialValue: String(enfant.age))
-            _activite = State(initialValue: enfant.activite)
             _passions = State(initialValue: enfant.passions)
             if let photoData = enfant.photo, let image = UIImage(data: photoData) {
                 _selectedImage = State(initialValue: image)
@@ -71,7 +69,6 @@ struct FormView: View {
                     Text(localization.localizedString("form.age.years"))
                         .foregroundColor(.textSecondary)
                 }
-                TextField(localization.localizedString("form.activity.placeholder"), text: $activite)
                 TextField(localization.localizedString("form.passions.placeholder"), text: $passions)
             }
         }
@@ -83,7 +80,7 @@ struct FormView: View {
                     Text(enfantToEdit != nil ? localization.localizedString("form.save") : localization.localizedString("form.button"))
                         .bold()
                 }
-                .disabled(prenom.isEmpty || age.isEmpty || activite.isEmpty || passions.isEmpty)
+                .disabled(prenom.isEmpty || age.isEmpty || passions.isEmpty)
             }
         }
         .sheet(isPresented: $showingImagePicker) {
@@ -97,7 +94,7 @@ struct FormView: View {
             id: enfantToEdit?.id ?? UUID(),
             prenom: prenom,
             age: Int(age) ?? 0,
-            activite: activite,
+            activite: "",
             passions: passions,
             photo: photoData,
             histoires: enfantToEdit?.histoires ?? []
