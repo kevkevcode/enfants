@@ -28,24 +28,6 @@ class Config {
     let temperature = 0.7
     let maxTokens = 1000
     
-    // Session URLSession dédiée
-    let session: URLSession = {
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 30
-        config.timeoutIntervalForResource = 300
-        config.waitsForConnectivity = true
-        config.requestCachePolicy = .reloadIgnoringLocalCacheData
-        
-        // Ajout des headers par défaut
-        config.httpAdditionalHeaders = [
-            "User-Agent": "enfants-app/1.0",
-            "Accept-Language": "fr-FR",
-            "Accept-Encoding": "gzip, deflate"
-        ]
-        
-        return URLSession(configuration: config)
-    }()
-    
     private init() {}
     
     static func initialize() {
